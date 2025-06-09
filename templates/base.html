@@ -1,0 +1,214 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <title>{% block title %} CinePlus {% endblock %}</title>
+    <style>
+        .navbar-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .navbar-logo span {
+            color: red;
+        }
+
+        .search-box {
+            width: 400px;
+        }
+
+        @media (max-width: 768px) {
+            .search-box {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+
+        .navbar-link {
+            font-size: 0.9rem;
+            margin-right: 15px;
+        }
+
+        .swiper {
+            width: 100%;
+            padding: 20px 0;
+        }
+
+        .swiper-slide img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+        }
+
+        .hero-section {
+            background: url('{% static "images/about.jpg" %}') center/cover no-repeat;
+            color: white;
+            padding: 100px 0;
+        }
+
+        .team-img {
+            object-fit: cover;
+            height: 220px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-3">
+        <div class="container">
+            <a class="navbar-brand navbar-logo" href="/">
+                Cine<span>Plus</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <form class="col-sm-8 d-flex mx-auto" method="get" action="/search">
+                    <input class="form-control" type="search" name="query" required
+                        placeholder="Search for Movies, Events, Plays, Sports and Activities">
+                </form>
+
+
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item me-2">
+                        <select class="form-select form-select-sm">
+                            <option>Mumbai</option>
+                            <option>Kolkata</option>
+                            <option>Delhi</option>
+                            <option>Chennai</option>
+                        </select>
+                    </li>
+
+                    {% if request.session.user  %}
+                    <li class="nav-item me-2">
+                        <a href="/logout" class="btn btn-primary btn-sm">Logout</a>
+                    </li>
+                    
+                   {% else %}
+                    <li class="nav-item me-2">
+                        <a href="/signin" class="btn btn-danger btn-sm">Sign in</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% block navbar %}
+    <!-- Navlist-item -->
+    <div class="container">
+        <div class="bg-light py-2 px-3 d-flex flex-wrap justify-content-between align-items-center">
+            <div>
+                <a href="/" class="navbar-link text-dark text-decoration-none">Home</a>
+                <a href="#events" class="navbar-link text-dark text-decoration-none">Events</a>
+                <a href="#premieres" class="navbar-link text-dark text-decoration-none">Premieres</a>
+                <a href="about" class="navbar-link text-dark text-decoration-none">About</a>
+                <a href="/movies" class="navbar-link text-dark text-decoration-none">Movies</a>
+            </div>
+
+            {% if request.session.user %}
+            <div>
+                <a href="/profile" class="navbar-link text-dark text-decoration-none">
+                    <i class="bi bi-person-circle"></i> Profile
+                </a>    
+                <a href="/history" class="navbar-link text-dark text-decoration-none">
+                    <i class="bi bi-clock-history"></i> My Bookings
+                </a>    
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+    {% endblock navbar %}
+
+    {% block body %} {% endblock body %}
+
+    <footer class="bg-dark text-light pb-3 mt-3">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-md-3">
+                    <h5 class="text-danger fw-bold text-white">Cine<span class="text-danger">Plus</span></h5>
+                    <p class="small text-muted">Your go-to platform for movies, events, plays, sports and more.</p>
+                </div>
+
+                <div class="col-md-3">
+                    <h6 class="text-uppercase fw-bold">Explore</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="#" class="text-decoration-none text-light">Movies</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Stream</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Events</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Plays</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Sports</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-3">
+                    <h6 class="text-uppercase fw-bold">Help</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="#" class="text-decoration-none text-light">Contact Us</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">FAQs</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Terms of Use</a></li>
+                        <li><a href="#" class="text-decoration-none text-light">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-3">
+                    <h6 class="text-uppercase fw-bold">Follow Us</h6>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-light fs-5"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-light fs-5"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-light fs-5"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="text-light fs-5"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-secondary mt-4">
+
+            <div class="text-center small text-light">
+                &copy; 2025 CinePlus. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script>
+        const swiper = new Swiper(".mySwiper", {
+            loop: true,
+            spaceBetween: 10,
+            slidesPerView: 3,
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            }
+        });
+
+        var swiper1 = new Swiper('.mySwiper1', {
+            slidesPerView: 4,
+            spaceBetween: 20,
+            loop: true,
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            }
+        });
+    </script>
+</body>
+
+</html>

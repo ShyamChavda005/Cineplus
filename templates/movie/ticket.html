@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block title %} CinePlus | Tickets {% endblock title %}
+
+{% load static %}
+{% block body %}
+<!-- Tickets -->
+
+<div class="container mt-3 mb-5 d-flex justify-content-center">
+  <div class="card shadow-lg rounded-4 col-sm-8">
+    <div class="card-header bg-danger text-white text-center rounded-top-4">
+      <h3 class="mb-0">Book Your Ticket</h3>
+    </div>
+    <div class="card-body">
+      
+      <div class="mb-3">
+        <h4 class="text-danger text-center"> Total Amount: ₹200 per seat </h4> 
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+        <!-- Movie Name -->
+        <div class="mb-3">
+          <label for="movieName" class="form-label">Movie Name</label>
+          <input type="hidden" value="{{ movie.id }}" name="movie_id" id="movie_id" />
+          <input type="text" value="{{ movie.name }}" class="form-control" id="movieName" name="movieName" placeholder="Enter movie name"
+          readonly>
+        </div>
+            
+        <!-- Number of Tickets -->
+        <div class="mb-3">
+          <label for="tickets" class="form-label">Number of Tickets</label>
+          <input type="number" class="form-control" id="tickets" name='tickets' min="1" max="10" required>
+        </div>
+
+        <!-- Total Amount -->
+        <div class="mb-3">
+          <label for="totalAmount" class="form-label">Total Amount (₹)</label>
+          <input type="text" class="form-control" id="totalAmount" name="totalAmount" value="₹0" readonly>
+        </div>
+
+        <div class="row">
+          {% for show in theater_shows %}
+          <div class="col-md-4 mb-4 d-flex align-items-stretch">
+            <div class="card text-center shadow-sm w-100">
+              <div class="card-body">
+                <input type="hidden" name="theater_id" value="{{ show.id }}"/>
+                <h5 class="card-title">{{ show.name }}</h5>
+                <div>
+                  {% for dt in show.times %}
+                  <p class="mb-1">
+                    <i class="bi bi-calendar"></i> {{ dt|date:"F j, Y" }} &nbsp;
+                    <i class="bi bi-clock"></i> {{ dt|time:"g:i A" }}
+                  </p>
+                  {% endfor %}
+                </div>
+                <div class="card-footer">
+                  <button class="btn btn-danger mt-2 select-theater" data-times="{{ show.times|join:',' }}"
+                    data-first-date="{{ show.times.0|date:'Y-m-d' }}">
+                    Select This Theater
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        {% for show in theater_shows %}
+        {{ show.times|json_script:"times-data-"|safe }}
+        {% endfor %}
+
+        <!-- Date and Time -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="date" class="form-label">Date</label>
+            <select class="form-select" id="date" name="date" aria-readonly="true" required>
+              <option selected disabled>Selected Date</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label for="time" class="form-label">Time</label>
+            <select class="form-select" id="time" name="time" aria-readonly="true" required>
+              <option selected disabled>Selected Time</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="d-grid mt-5">
+          <button type="submit" class="btn btn-danger py-2 fw-semibold rounded-3 shadow-sm">
+            Confirm
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+  const ticketInput = document.getElementById("tickets");
+  const totalAmountInput = document.getElementById("totalAmount");
+
+  const pricePerSeat = 200;
+
+  ticketInput.addEventListener("input", () => {
+    const ticketCount = parseInt(ticketInput.value) || 0;
+    const total = ticketCount * pricePerSeat;
+    totalAmountInput.value = `₹${total}`;
+  });
+
+
+  const dateSelect = document.getElementById("date");
+  const timeSelect = document.getElementById("time");
+
+  document.querySelectorAll(".select-theater").forEach(button => {
+    button.addEventListener("click", function (event) {
+      event.preventDefault();
+
+      const rawTimes = this.getAttribute("data-times").split(",");
+
+      // Extract unique dates from rawTimes
+      const uniqueDates = [...new Set(rawTimes.map(dt => dt.split('T')[0]))];
+
+      // Enable date select and clear options
+      dateSelect.disabled = false;
+      dateSelect.innerHTML = ""; // Clear existing options
+
+      // Add a placeholder option
+      const placeholderOption = document.createElement("option");
+      placeholderOption.textContent = "Select Below Date";
+      placeholderOption.disabled = true;
+      placeholderOption.selected = true;
+      dateSelect.appendChild(placeholderOption);
+
+      // Populate dates
+      uniqueDates.forEach(dateStr => {
+        const option = document.createElement("option");
+        option.value = dateStr;
+        // Format date nicely e.g. "June 3, 2025"
+        const dateObj = new Date(dateStr);
+        option.textContent = dateObj.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+        dateSelect.appendChild(option);
+      });
+
+      // Clear and disable time select until date chosen
+      timeSelect.innerHTML = "";
+      timeSelect.disabled = true;
+    });
+  });
+
+  // When user selects a date, update times dropdown accordingly
+  dateSelect.addEventListener("change", function () {
+    const selectedDate = this.value;
+
+    if (!window.currentRawTimes) return;
+
+    const filteredTimes = window.currentRawTimes.filter(dt => dt.startsWith(selectedDate));
+
+    // Enable and fill times dropdown
+    timeSelect.disabled = false;
+    timeSelect.innerHTML = "";
+
+    filteredTimes.forEach(timeStr => {
+      const dateObj = new Date(timeStr);
+      const option = document.createElement("option");
+      option.value = timeStr;
+      option.textContent = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+      timeSelect.appendChild(option);
+    });
+  });
+
+  // Modify the theater select click handler to store rawTimes globally
+  document.querySelectorAll(".select-theater").forEach(button => {
+    button.addEventListener("click", function (event) {
+      event.preventDefault();
+
+      window.currentRawTimes = this.getAttribute("data-times").split(",");
+
+      const uniqueDates = [...new Set(window.currentRawTimes.map(dt => dt.split('T')[0]))];
+
+      dateSelect.disabled = false;
+      dateSelect.innerHTML = "";
+
+      const placeholderOption = document.createElement("option");
+      placeholderOption.textContent = "Select Below Date";
+      placeholderOption.disabled = true;
+      placeholderOption.selected = true;
+      dateSelect.appendChild(placeholderOption);
+
+      uniqueDates.forEach(dateStr => {
+        const option = document.createElement("option");
+        option.value = dateStr;
+        const dateObj = new Date(dateStr);
+        option.textContent = dateObj.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+        dateSelect.appendChild(option);
+      });
+
+      timeSelect.innerHTML = "";
+      timeSelect.disabled = true;
+    });
+  });
+
+</script>
+
+{% endblock body %}

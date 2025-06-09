@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %} CinePlus | About {% endblock title %}
+
+{% load static %}
+{% block body %}
+
+<!-- Hero Section -->
+<div class="container">
+    <section class="hero-section text-center text-white">
+        <div class="container">
+            <h1 class="display-4 fw-bold">About CinePlus</h1>
+            <p class="lead">Revolutionizing your movie experience, one ticket at a time.</p>
+        </div>
+    </section>
+
+    <!-- About Content -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row g-4 align-items-center">
+                <div class="col-md-6">
+                    <img src="{% static 'images/cinema.jpeg' %}" class="img-fluid rounded shadow" alt="Cinema" />
+                </div>
+                <div class="col-md-6">
+                    <h2 class="fw-bold mb-3">Who We Are</h2>
+                    <p>
+                        CinePlus is your go-to platform for discovering and booking tickets to the latest movies,
+                        shows,
+                        and events across your city. We're passionate about entertainment and strive to make ticket
+                        booking
+                        effortless, reliable, and enjoyable for all.
+                    </p>
+                    <p>
+                        Founded with a mission to simplify the movie-going experience, we bring you the best of cinema,
+                        curated experiences, and special screenings — all at your fingertips.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Mission -->
+    <section class="py-5 text-center">
+        <div class="container">
+            <h2 class="fw-bold mb-4">Our Mission</h2>
+            <p class="lead mx-auto" style="max-width: 800px;">
+                To redefine the entertainment booking experience by combining technology, creativity, and convenience —
+                making it easier than ever for people to connect with the entertainment they love.
+            </p>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-5 text-center text-white bg-primary">
+        <div class="container">
+            <h3 class="fw-bold">Want to partner with us or join the team?</h3>
+            <p>We're always on the lookout for passionate people and partners who want to make a difference in
+                entertainment.</p>
+            <a href="#" class="btn btn-light px-4 mt-2">Contact Us</a>
+        </div>
+    </section>
+
+    <div class="mb-5"></div>
+</div>
+
+{% endblock body %}

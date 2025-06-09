@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}CinePlus | Search Results{% endblock %}
+{% block body %}
+<div class="container py-4">
+    <h3 class="mb-4">Search Results for "{{ query }}"</h3>
+    
+    {% if results %}
+        <div class="row">
+            {% for movie in results %}
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <img src="{{ movie.poster.url }}" class="card-img-top" alt="{{ movie.name }}" style="height: 300px; object-fit: contain;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ movie.name }}</h5>
+                            <a href="/movie" class="btn btn-sm btn-danger">View</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+</div>
+{% endblock %}

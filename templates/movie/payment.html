@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %} CinePlus | Payment {% endblock title %}
+{% load static %}
+
+{% block body %}
+<div class="container py-5">
+  <div class="card shadow-lg p-4 rounded-4">
+    <div class="card-body">
+      <h2 class="card-title text-center text-success mb-5">Payment Gateway</h2>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-success text-center fs-5" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <h5>Movie:</h5>
+          <p class="fw-bold text-primary">{{ movie.name }}</p>
+        </div>
+        <div class="col-md-6">
+          <h5>Theater:</h5>
+          <p class="fw-bold text-dark">{{ theater.name }}</p>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <h5>Seats:</h5>
+          <p>
+            {% for seat in selected_seats %}
+              <span class="badge bg-dark me-1 py-2 fs-6 px-3">{{ seat }}</span>
+            {% endfor %}
+          </p>
+        </div>
+        <div class="col-md-6">  
+          <h5>Total Amount:</h5>
+          <p class="fw-bold text-danger fs-5">{{ total_amount }}</p>
+        </div>
+      </div>
+
+      <hr />
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-lg btn-success px-5 py-2">Pay Now</button>
+        </div>
+      </form>
+
+      <p class="text-muted text-center mt-3">Click on pay button for payment.</p>
+    </div>
+  </div>
+</div>
+{% endblock body %}

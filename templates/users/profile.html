@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %} CinePlus | Profile {% endblock title %}
+
+{% load static %}
+{% block body %}
+<div class="container my-5">
+    <div class="card shadow-lg" style="max-width: 600px; margin: auto;">
+        <div class="card-body">
+            <h3 class="text-center mb-4 fw-bold">My Profile</h3>
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show my-2 text-center" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <form method="post" action="">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="name" class="form-control" value="{{ user.name }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" name="email" class="form-control" value="{{ user.email }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" value="{{ user.username }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">old Password</label>
+                    <input type="text" class="form-control" value="{{ user.password }}" disabled>
+                    <small class="text-danger"> * Password field not changeble to change update password</small>
+                    <div class="mt-3 d-flex justify-content-start">
+                        <a href="/update-password" class="text-decoration-none">Update password</a>
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="/logout" class="btn btn-outline-danger">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock body %}

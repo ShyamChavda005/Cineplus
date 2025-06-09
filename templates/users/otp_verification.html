@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block navbar %} {% endblock navbar %}
+{% block title %} CinePlus | Signin {% endblock title %}
+
+{% load static %}
+{% block body %}
+<!-- Otp Form -->
+ <div class="container d-flex justify-content-center py-4 mb-5">
+ <div class="card p-4 shadow-sm" style="width: 100%; max-width: 400px;">
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show my-2 text-center" role="alert">
+  {{ message }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+  {% endif %}
+    <h4 class="mb-3 text-center">OTP Verification</h4>
+    <p class="text-muted text-center">Enter the 6-digit code sent to your email</p>
+
+    <form method="POST" action="">
+      {% csrf_token %}
+      <div class="d-flex justify-content-center mb-3">
+        <input type="text" id="o1" maxlength="1" class="form-control otp-input" name="o1" required>
+        <input type="text" id="o2" maxlength="1" class="form-control otp-input" name="o2" required>
+        <input type="text" id="o3" maxlength="1" class="form-control otp-input" name="o3" required>
+        <input type="text" id="o4" maxlength="1" class="form-control otp-input" name="o4" required>
+        <input type="text" id="o5" maxlength="1" class="form-control otp-input" name="o5" required>
+        <input type="text" id="o6" maxlength="1" class="form-control otp-input" name="o6" required>
+      </div>
+
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary">Verify OTP</button>
+      </div>
+    </form>
+
+    <p class="mt-3 text-center">
+      Didn't receive the code?
+      <a href="">Resend</a>
+    </p>
+  </div>
+</div>
+
+{% endblock body %}

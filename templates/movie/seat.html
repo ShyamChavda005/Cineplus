@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block title %} CinePlus | Seat-selection {% endblock title %}
+{% load static %}
+{% block body %}
+<style>
+  .seat {
+    width: 40px;
+    height: 40px;
+    line-height: 38px;
+    text-align: center;
+    border-radius: 5px;
+    margin: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: 0.2s;
+  }
+  .available {
+    background-color: #e0f7fa;
+    border-color: #00bcd4;
+    color: #007b8a;
+  }
+  .sold {
+    background-color: #dcdcdc;
+    border-color: #999;
+    cursor: not-allowed;
+    color: #777;
+  }
+  .selected {
+    background-color: #28a745;
+    border-color: #1e7e34;
+    color: #fff;
+  }
+  .row-label {
+    width: 30px;
+    font-weight: bold;
+    display: inline-block;
+    text-align: center;
+    margin-right: 8px;
+  }
+  .screen {
+    margin-top: 30px;
+    height: 30px;
+    background: #ccc;
+    width: 60%;
+    text-align: center;
+    line-height: 30px;
+    font-weight: bold;
+    border-radius: 4px;
+  }
+</style>
+
+<div class="container py-4 mb-5">
+  <div class="card text-white bg-success mb-3 shadow-sm">
+    <div class="card-body text-center">
+      <h5 class="card-title mb-0">You have to Pay</h5>
+      <h3 class="card-text mt-1 fw-bold">Total {{ totalAmount }}</h3>
+    </div>
+  </div>
+
+  <h3 class="text-center mb-4">Select Your Seats</h3>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-danger text-center">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div id="alert" style="display:none;" class="alert alert-danger alert-dismissible text-center text-dark" role="alert"></div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="d-flex flex-column align-items-center">
+      {% for row in "ABCDE" %}
+      <div class="d-flex align-items-center mb-2">
+        <span class="row-label">{{ row }}</span>
+        {% for seat_num in "123456789" %}
+          {% with row|add:seat_num as seat_id %}
+            {% if seat_id in booked_seats %}
+              <div class="seat sold" data-seat-id="{{ seat_id }}">{{ seat_num }}</div>
+            {% else %}
+              <div class="seat available" data-seat-id="{{ seat_id }}">{{ seat_num }}</div>
+            {% endif %}
+          {% endwith %}
+        {% endfor %}
+      </div>
+      {% endfor %}
+
+      <div class="screen mt-4">All eyes this way please!</div>
+    </div>
+
+    <div class="d-flex justify-content-center mt-4 gap-4">
+      <div><div class="seat available me-1"></div> Available</div>
+      <div><div class="seat selected me-1"></div> Selected</div>
+      <div><div class="seat sold me-1"></div> Sold</div>
+    </div>
+
+    <input type="hidden" name="selected_seats" id="selectedSeatsInput" />
+
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-success">Book Now</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const maxSelectableSeats = {{ ticket_count }};
+  let selectedSeats = [];
+
+  document.querySelectorAll('.seat.available').forEach(seat => {
+    seat.addEventListener('click', () => {
+      const seatId = seat.dataset.seatId;
+
+      if (seat.classList.contains('selected')) {
+        seat.classList.remove('selected');
+        selectedSeats = selectedSeats.filter(id => id !== seatId);
+      } else {
+        if (selectedSeats.length < maxSelectableSeats) {
+          seat.classList.add('selected');
+          selectedSeats.push(seatId);
+        } else {
+          document.getElementById("alert").style.display = "block";
+          document.getElementById("alert").innerHTML = `You can select only ${maxSelectableSeats} seat(s).`;
+        }
+      }
+
+      document.getElementById('selectedSeatsInput').value = selectedSeats.join(',');
+    });
+  });
+</script>
+{% endblock body %}
