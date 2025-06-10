@@ -22,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'unsafe-secret-key')
+SECRET_KEY = 'django-insecure-(=)%7z$%!2l%#ogna_y0*ai6%ic$76lu($&ju0_*8%yg#f6h88'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = True
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = ['.vercel.app']
 
 
 # Application definition
@@ -85,7 +85,7 @@ DATABASES = {
     }
 }
 
-DATABASES['default'] = dj_database_url.parse('postgresql://django_cineplus_user:Cf3uOW7DXRK09mj3GdtkqXh2EqWGIzT2@dpg-d137i0h5pdvs73ddu67g-a.oregon-postgres.render.com/django_cineplus')
+DATABASES['default']=dj_database_url.parse('postgresql://django_cineplus_user:Cf3uOW7DXRK09mj3GdtkqXh2EqWGIzT2@dpg-d137i0h5pdvs73ddu67g-a.oregon-postgres.render.com/django_cineplus')
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -123,7 +123,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [ BASE_DIR / "static" ]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -137,7 +136,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
-
+EMAIL_HOST_USER = 'Your Email'
+EMAIL_HOST_PASSWORD = 'Gmail App Password'
