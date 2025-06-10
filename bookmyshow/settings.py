@@ -42,7 +42,17 @@ INSTALLED_APPS = [
     'home',
     'users',
     'movie',
+    'cloudinary',
+    'cloudinary_storage',
 ]
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dostiennt',
+    'API_KEY': '117616382436263',
+    'API_SECRET': 'XC2quEpW5AI1DWTVdaZFJr0wWvw',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
