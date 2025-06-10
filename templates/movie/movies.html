@@ -10,7 +10,7 @@
   {% for movie in movies %}
   <div class="row align-items-center mt-3">
     <div class="col-md-4 mb-4">
-     <img src="../../media/movies/{{ movie.poster.url }}" alt="Movie Poster" class="movie-poster" />
+     <img src="{{ movie.poster.url }}" alt="Movie Poster" class="movie-poster" />
     </div>
     <div class="col-md-8 movie-info">
       <h1 class="mb-3">{{ movie.name }}</h1>
