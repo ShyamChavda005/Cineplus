@@ -42,17 +42,7 @@ INSTALLED_APPS = [
     'home',
     'users',
     'movie',
-    'cloudinary',
-    'cloudinary_storage',
 ]
-
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dostiennt',
-    'API_KEY': '117616382436263',
-    'API_SECRET': 'XC2quEpW5AI1DWTVdaZFJr0wWvw',
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -133,7 +123,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [ BASE_DIR / "static" ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
