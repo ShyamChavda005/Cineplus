@@ -85,7 +85,7 @@ DATABASES = {
     }
 }
 
-DATABASES['default']=dj_database_url.parse('postgresql://django_cineplus_user:Cf3uOW7DXRK09mj3GdtkqXh2EqWGIzT2@dpg-d137i0h5pdvs73ddu67g-a.oregon-postgres.render.com/django_cineplus')
+DATABASES['default'] = dj_database_url.parse('postgresql://django_cineplus_user:Cf3uOW7DXRK09mj3GdtkqXh2EqWGIzT2@dpg-d137i0h5pdvs73ddu67g-a.oregon-postgres.render.com/django_cineplus')
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -123,6 +123,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [ BASE_DIR / "static" ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
