@@ -208,6 +208,30 @@
                 prevEl: '.swiper-button-prev',
             }
         });
+
+        var swiper2 = new Swiper(".movieSwiper", {
+    slidesPerView: 1,
+    spaceBetween: 20,
+    loop: true,
+    autoplay: {
+      delay: 1500,
+    },
+    breakpoints: {
+      576: {
+        slidesPerView: 1.2,
+      },
+      768: {
+        slidesPerView: 2,
+      },
+      992: {
+        slidesPerView: 3,
+      }
+    },
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+    },
+  });
     </script>
 </body>
 
