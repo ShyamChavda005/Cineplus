@@ -41,6 +41,7 @@
 
         <div class="row">
           {% for show in theater_shows %}
+          {% comment %} {% if show.times %} {% endcomment %}
           <div class="col-md-4 mb-4 d-flex align-items-stretch">
             <div class="card text-center shadow-sm w-100">
               <div class="card-body">
@@ -63,6 +64,7 @@
               </div>
             </div>
           </div>
+          {% comment %} {% endif %} {% endcomment %}
           {% endfor %}
         </div>
 

@@ -2,27 +2,30 @@ from django.shortcuts import render, get_object_or_404, redirect
 from movie.models import *
 from users.models import *
 from django.contrib import messages
+from datetime import *
+from django.utils.timezone import localtime  
 
 # Create your views here.
-
 def movies(request) :
     movies = Movie.objects.all()
     return render(request,"movie/movies.html", {'movies' : movies})
 
-def ticket(request,movieid) :
-    if not request.session.get("user") :
+def ticket(request, movieid):
+    if not request.session.get("user"):
         messages.error(request, "Signin Required for booking")
         return redirect("signin")
 
     movie = Movie.objects.get(id=movieid)
     theaters = Theater.objects.filter(movie=movie)
 
+    today = date.today()
     theater_dict = {}
 
     for t in theaters:
-        if t.name not in theater_dict:
-            theater_dict[t.name] = {'id': t.id, 'datetimes': []}
-        theater_dict[t.name]['datetimes'].append(t.datetime)
+        if today == localtime(t.datetime).date():
+            if t.name not in theater_dict:
+                theater_dict[t.name] = {'id': t.id, 'datetimes': []}
+            theater_dict[t.name]['datetimes'].append(t.datetime)
 
     theater_shows = [
         {'id': data['id'], 'name': name, 'times': data['datetimes']}
@@ -34,19 +37,20 @@ def ticket(request,movieid) :
         tickets = request.POST.get('tickets')
         totalAmount = request.POST.get('totalAmount')
         theater_id = request.POST.get('theater_id')
-        date = request.POST.get('date')
+        selected_date  = request.POST.get('date')
         time = request.POST.get('time')
 
         request.session['movie_id'] = movie_id
         request.session['tickets'] = tickets
         request.session['totalAmount'] = totalAmount
         request.session['theater_id'] = theater_id
-        request.session['date'] = date
+        request.session['date'] = selected_date 
         request.session['time'] = time
 
         return redirect('seat')
 
-    return render(request,"movie/ticket.html",{'movie':movie, 'theater_shows' : theater_shows})
+    return render(request, "movie/ticket.html", {'movie': movie, 'theater_shows': theater_shows})
+
 
 def seat(request):
     if not request.session.get("user") :
