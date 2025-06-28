@@ -6,6 +6,28 @@
 {% block body %}
 <!-- Movies -->
 
+<div class="container mt-3">
+  <form method="get" id="filter-form">
+
+  <label>Genre:</label>
+  <select name="genre" class="form-select" onchange="this.form.submit()">
+    <option value="">All</option>
+    {% for g in genres %}
+      <option value="{{g.name}}" {% if g.name == select_genre %} selected {% endif %}>{{ g.name }}</option>
+    {% endfor %}
+  </select>
+
+  <label>Language:</label>
+  <select name="language" class="form-select" onchange="this.form.submit()">
+    <option value="">All</option>
+    {% for l in languages %}
+      <option value="{{l.name}}" {% if l.name == select_language %} selected {% endif %}>{{ l.name }}</option>
+    {% endfor %}
+  </select>
+
+</form>
+</div>
+
 <div class="container movie-section mb-5">
   {% for movie in movies %}
   <div class="row align-items-center mt-3">
@@ -15,6 +37,8 @@
     <div class="col-md-8 movie-info">
       <h1 class="mb-3">{{ movie.name }}</h1>
       <div class="rating mb-3"><strong>Rating: ⭐ </strong> {{ movie.rate }}/5</div>
+      <p><strong>Genre:</strong> {{ movie.genre }} </p>
+      <p><strong>Language:</strong> {{ movie.language }} </p>
       <p><strong>Cast:</strong> {{ movie.cast }} </p>
       <p class="mt-3">
         <strong>Description:</strong>  {{ movie.description }}
@@ -23,6 +47,9 @@
       <a href="{% url 'ticket' movie.id %}" class="btn btn-outline-danger mt-4">Book Tickets</a>
     </div>
   </div>
+
+  {% empty %}
+    <h4 class="text-left text-danger"> No Movie Found.. </h4>
   {% endfor %}
 
 </div>

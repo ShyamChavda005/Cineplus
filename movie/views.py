@@ -7,8 +7,27 @@ from django.utils.timezone import localtime
 
 # Create your views here.
 def movies(request) :
+    genre = request.GET.get("genre")
+    language = request.GET.get("language")
+
     movies = Movie.objects.all()
-    return render(request,"movie/movies.html", {'movies' : movies})
+    if genre :
+        movies = Movie.objects.filter(genre__name=genre)
+    if language :
+        movies = Movie.objects.filter(language__name=language)
+
+    genres = Genre.objects.all()
+    languages = Language.objects.all()
+
+    context = {
+        'movies' : movies,
+        'genres' : genres,
+        'languages' : languages,
+        'select_genre' : genre,
+        'select_language' : language,
+    }
+
+    return render(request,"movie/movies.html", context)
 
 def ticket(request, movieid):
     if not request.session.get("user"):

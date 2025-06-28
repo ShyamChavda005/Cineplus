@@ -4,11 +4,25 @@ from django.utils import timezone
 
 # Create your models here.
 
+class Genre(models.Model) :
+    name = models.CharField(max_length=50,unique=True)
+
+    def __str__(self):
+        return self.name
+    
+class Language(models.Model) :
+    name = models.CharField(max_length=50,unique=True)
+
+    def __str__(self):
+        return self.name
+
 class Movie(models.Model):
     name= models.CharField(max_length=255)
     description= models.TextField(blank=True,null=True) 
     poster = models.ImageField(upload_to="movies/")
     rate = models.DecimalField(max_digits=3,decimal_places=1)
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
+    language = models.ForeignKey(Language, on_delete=models.CASCADE)
     cast= models.TextField()
     release_date = models.DateField()
 
