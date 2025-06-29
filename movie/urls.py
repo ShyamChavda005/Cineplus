@@ -9,6 +9,7 @@ urlpatterns = [
   path('ticket/<int:movieid>',views.ticket,name="ticket"),
   path('seat-selection/',views.seat,name="seat"),
   path('payment/',views.payment,name="payment"),
+  path('payment/callback/', views.payment_callback, name='payment_callback'),
 ]
 
 

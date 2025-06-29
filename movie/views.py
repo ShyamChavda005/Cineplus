@@ -4,6 +4,10 @@ from users.models import *
 from django.contrib import messages
 from datetime import *
 from django.utils.timezone import localtime  
+import requests
+from django.conf import settings
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 def movies(request) :
@@ -115,39 +119,66 @@ def seat(request):
 
     return render(request, "movie/seat.html", context)
 
+@csrf_exempt
 def payment(request):
-    if not request.session.get("user") :
+    if not request.session.get("user"):
         messages.error(request, "Signin Required for booking")
         return redirect("signin")
     
     selected_seats = request.session.get('selected_seats', [])
     total_amount = request.session.get('totalAmount')
+    amount_str = str(total_amount).replace("₹", "").replace(",", "").strip()
     movie_id = request.session.get('movie_id')
     theater_id = request.session.get('theater_id')
-    user = request.session.get('user')  # Assuming user login saved this
+    username = request.session.get('user')
 
     movie = Movie.objects.get(id=movie_id)
     theater = Theater.objects.get(id=theater_id)
-    user = Signup.objects.get(username=user)
+    user = Signup.objects.get(username=username)
+
+    # Generate unique order ID
+    order_id = f"ORDER_{user.id}_{int(datetime.now().timestamp())}"
 
     if request.method == 'POST':
-        # 1. Create a booking instance
-        booking = Booking.objects.create(
-            user=user,
-            movie=movie,
-            theater=theater,
-            amount=total_amount,
-            booked_at=timezone.now()
-        )
+        # Call Cashfree to create order
+        headers = {
+            "x-client-id": settings.CASHFREE_APP_ID,
+            "x-client-secret": settings.CASHFREE_SECRET_KEY,
+            "x-api-version": "2022-09-01",
+            "Content-Type": "application/json",
+        }
 
-        # 2. Fetch Seat instances and add them
-        for seat_num in selected_seats:
-            seat = Seat.objects.get(theater=theater, seat_number=seat_num)
-            booking.seats.add(seat)
+        data = {
+            "link_id": f"LINK_{user.id}_{int(datetime.now().timestamp())}",
+            "link_amount": float(amount_str),
+            "link_currency": "INR",
+            "customer_details": {
+                "customer_id": str(user.id),
+                "customer_email": user.email,
+                "customer_name": user.name,
+                "customer_phone": "9712805544"
+            },
+            "link_notify": {
+                "send_sms": True,
+                "send_email": True
+            },
+            "link_purpose": "CinePlus Ticket Booking",
+            "link_meta": {
+                "return_url": f"http://127.0.0.1:8000/payment/callback/?order_id={order_id}"
+            }
+        }
 
-        booking.save()
+        response = requests.post("https://sandbox.cashfree.com/pg/links", headers=headers, json=data)
 
-        messages.success(request, 'Payment successful! Your seats are booked.')
+
+        result = response.json()
+        payment_link = result.get("link_url")
+
+        if payment_link:
+            return redirect(payment_link)
+        else:
+            messages.error(request, "Could not generate payment link.")
+
 
     context = {
         'selected_seats': selected_seats,
@@ -157,3 +188,46 @@ def payment(request):
     }
 
     return render(request, "movie/payment.html", context)
+
+
+@csrf_exempt
+def payment_callback(request):
+    order_id = request.GET.get("order_id")
+    session_order_id = request.session.get("cashfree_order_id")
+
+    if order_id != session_order_id:
+        messages.error(request, "Invalid payment verification.")
+        return redirect("movies")
+
+    # Finalize booking
+    selected_seats = request.session.get('selected_seats', [])
+    total_amount = request.session.get('totalAmount')
+    movie_id = request.session.get('movie_id')
+    theater_id = request.session.get('theater_id')
+    username = request.session.get('user')
+
+    movie = Movie.objects.get(id=movie_id)
+    theater = Theater.objects.get(id=theater_id)
+    user = Signup.objects.get(username=username)
+
+    booking = Booking.objects.create(
+        user=user,
+        movie=movie,
+        theater=theater,
+        amount=total_amount,
+        booked_at=timezone.now()
+    )
+
+    for seat_num in selected_seats:
+        seat = Seat.objects.get(theater=theater, seat_number=seat_num)
+        seat.is_booked = True
+        seat.save()
+        booking.seats.add(seat)
+
+    booking.save()
+
+    # Clean up session
+    for key in ['selected_seats', 'totalAmount', 'movie_id', 'theater_id', 'date', 'time', 'cashfree_order_id']:
+        request.session.pop(key, None)
+
+    return render(request, "movie/payment_success.html", {"booking": booking})
