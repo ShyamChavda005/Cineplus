@@ -31,7 +31,6 @@ ALLOWED_HOSTS = ['.vercel.app','127.0.0.1','192.168.254.119']
 
 CASHFREE_APP_ID = "TEST106129236bd3ef181dec8b45968132921601"
 CASHFREE_SECRET_KEY = "cfsk_ma_test_5399214271b6ea45201df6ed7112065f_cac7c49e"
-CASHFREE_API_URL = "https://sandbox.cashfree.com/pg/orders"
 CASHFREE_API_ENV = "TEST"   
 
 
