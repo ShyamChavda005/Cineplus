@@ -119,6 +119,7 @@ def seat(request):
 
     return render(request, "movie/seat.html", context)
 
+
 @csrf_exempt
 def payment(request):
     if not request.session.get("user"):
@@ -138,6 +139,7 @@ def payment(request):
 
     # Generate unique order ID
     order_id = f"ORDER_{user.id}_{int(datetime.now().timestamp())}"
+    request.session['cashfree_order_id'] = order_id
 
     if request.method == 'POST':
         # Call Cashfree to create order
@@ -156,7 +158,7 @@ def payment(request):
                 "customer_id": str(user.id),
                 "customer_email": user.email,
                 "customer_name": user.name,
-                "customer_phone": "9712805544"
+                "customer_phone": user.phone
             },
             "link_notify": {
                 "send_sms": True,
@@ -197,7 +199,7 @@ def payment_callback(request):
 
     if order_id != session_order_id:
         messages.error(request, "Invalid payment verification.")
-        return redirect("movies")
+        # return redirect("movies")
 
     # Finalize booking
     selected_seats = request.session.get('selected_seats', [])

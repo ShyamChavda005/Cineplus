@@ -30,11 +30,12 @@ def signup(request) :
     if request.method == "POST" :
         name = request.POST.get('name')
         email = request.POST.get("email")
+        phone = request.POST.get("phone")
         username = request.POST.get("username")
         password = request.POST.get("password")
         confirmpassword = request.POST.get("confirmpassword")
 
-        if not name or not email or not username or not password or not confirmpassword:
+        if not name or not email or not phone or not username or not password or not confirmpassword:
             messages.error(request, 'All fields are required.')
             return redirect('signup')  
 
@@ -55,7 +56,7 @@ def signup(request) :
             return render(request,"users/signup.html")
         
         try :
-            sigup = Signup(name=name,email=email,username=username,password=password,confirmpassword=confirmpassword)
+            sigup = Signup(name=name,email=email,phone=phone,username=username,password=password,confirmpassword=confirmpassword)
             sigup.save()
             messages.success(request, "Account Created! Login With register Username and password")
             return redirect("signin")
@@ -77,6 +78,7 @@ def profile(request):
     if request.method == "POST":
         new_name = request.POST.get('name')
         new_email = request.POST.get('email')
+        new_phone = request.POST.get('phone')
         new_username = request.POST.get('username')
 
         update = False
@@ -96,6 +98,10 @@ def profile(request):
 
         if new_email != user.email:
             user.email = new_email
+            update = True
+
+        if new_phone != user.phone:
+            user.phone = new_phone
             update = True
 
         if update:

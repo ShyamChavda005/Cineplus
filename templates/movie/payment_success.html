@@ -4,23 +4,26 @@
 {% block title %} CinePlus | Payment {% endblock title %}
 
 {% block body %}
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="card shadow mx-auto" style="max-width: 600px;">
         <div class="card-body text-center">
             <div class="mb-4">
                 <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
             </div>
             <h2 class="card-title text-success">Payment Successful!</h2>
-            <p class="lead">Your booking is confirmed 🎉</p>
+            <p class="lead">Your booking is confirmed</p>
             <hr>
 
             <h5 class="mt-4">{{ booking.movie.title }}</h5>
             <p class="mb-1"><strong>Theater:</strong> {{ booking.theater.name }}</p>
-            <p class="mb-1"><strong>Amount Paid:</strong> ₹{{ booking.amount }}</p>
+            <p class="mb-1"><strong>Amount Paid:</strong> {{ booking.amount }}</p>
             <p class="mb-1"><strong>Seats:</strong> {{ booking.seats.all|join:", " }}</p>
             <p class="mb-3"><strong>Booked At:</strong> {{ booking.booked_at|date:"d M Y, h:i A" }}</p>
 
-            <a href="{% url 'movies' %}" class="btn btn-success mt-3">Back to Movie List</a>
+            <div class="d-flex mx-4">
+                <a href="{% url 'movies' %}" class="btn btn-success mt-3">Back to Movies</a>
+                <a href="{% url 'history' %}" class="btn btn-danger mt-3">See history</a>
+            </div>
         </div>
     </div>
 </div>
