@@ -268,8 +268,10 @@ def history(request):
     
     user = Signup.objects.get(username=username)
     bookings = Booking.objects.filter(user=user).order_by('-booked_at')
+    payments = Payment.objects.filter(user=user).order_by('-created_at')
 
     context = {
-        'bookings': bookings
+        'bookings': bookings,
+        "payments" : payments
     }
     return render(request, 'users/history.html', context)

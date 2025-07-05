@@ -56,4 +56,23 @@ class Booking(models.Model):
     def __str__(self):
         return f'{self.user.username} booked {self.seats.count()} seat for {self.amount} at {self.theater.name}'
 
-    
+
+class Payment(models.Model) :
+    STATUS_CHOICES = (
+        ("PENDING", "Pending"),
+        ("PAID", "Paid"),
+        ("FAILED", "Failed"),
+    )
+
+    user = models.ForeignKey(Signup, on_delete=models.CASCADE)
+    order_id = models.CharField(max_length=100, unique=True)
+    link_id = models.CharField(max_length=100)
+    reference_id = models.CharField(max_length=100, blank=True, null=True)
+    payment_mode = models.CharField(max_length=50, blank=True, null=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="PENDING")
+    payment_time = models.DateTimeField(null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.order_id} ({self.status})"

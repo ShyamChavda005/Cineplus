@@ -4,27 +4,34 @@
 {% block title %} CinePlus | Payment {% endblock title %}
 
 {% block body %}
-<div class="container mt-5 mb-5">
-    <div class="card shadow mx-auto" style="max-width: 600px;">
-        <div class="card-body text-center">
+<div class="container py-5">
+    <div class="card shadow-lg mx-auto rounded-4 border-0" style="max-width: 650px;">
+        <div class="card-body text-center p-5">
             <div class="mb-4">
-                <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
             </div>
-            <h2 class="card-title text-success">Payment Successful!</h2>
-            <p class="lead">Your booking is confirmed</p>
-            <hr>
+            <h2 class="fw-bold text-success mb-3">Payment Successful!</h2>
+            <p class="text-muted fs-5">Your booking has been confirmed.</p>
+            <hr class="my-4">
 
-            <h5 class="mt-4">{{ booking.movie.title }}</h5>
-            <p class="mb-1"><strong>Theater:</strong> {{ booking.theater.name }}</p>
-            <p class="mb-1"><strong>Amount Paid:</strong> {{ booking.amount }}</p>
-            <p class="mb-1"><strong>Seats:</strong> {{ booking.seats.all|join:", " }}</p>
-            <p class="mb-3"><strong>Booked At:</strong> {{ booking.booked_at|date:"d M Y, h:i A" }}</p>
+            <div class="text-start mb-4">
+                <h5 class="fw-semibold mb-3">{{ booking.movie.name }}</h5>
+                <p class="mb-2"><strong>Theater:</strong> {{ booking.theater.name }}</p>
+                <p class="mb-2"><strong>Amount Paid:</strong> {{ booking.amount }}</p>
+                <p class="mb-2"><strong>Seats:</strong>
+                    {% for seat in booking.seats.all %}
+                        {{ seat.seat_number }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <p class="mb-0"><strong>Booked At:</strong> {{ booking.booked_at|date:"d M Y, h:i A" }}</p>
+            </div>
 
-            <div class="d-flex mx-4">
-                <a href="{% url 'movies' %}" class="btn btn-success mt-3">Back to Movies</a>
-                <a href="{% url 'history' %}" class="btn btn-danger mt-3">See history</a>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'movies' %}" class="btn btn-outline-success px-4">Back to Movies</a>
+                <a href="{% url 'history' %}" class="btn btn-danger px-4">View History</a>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock body %}

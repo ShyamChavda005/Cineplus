@@ -139,6 +139,7 @@ def payment(request):
 
     # Generate unique order ID
     order_id = f"ORDER_{user.id}_{int(datetime.now().timestamp())}"
+    link_id = f"LINK_{user.id}_{int(datetime.now().timestamp())}"
     request.session['cashfree_order_id'] = order_id
 
     if request.method == 'POST':
@@ -177,6 +178,13 @@ def payment(request):
         payment_link = result.get("link_url")
 
         if payment_link:
+            Payment.objects.create(
+                user=user,
+                order_id=order_id,
+                link_id=link_id,
+                amount=amount_str,
+                status="PENDING"
+            )
             return redirect(payment_link)
         else:
             messages.error(request, "Could not generate payment link.")
@@ -212,6 +220,19 @@ def payment_callback(request):
     theater = Theater.objects.get(id=theater_id)
     user = Signup.objects.get(username=username)
 
+    try:
+        payment = Payment.objects.get(order_id=order_id)
+        payment.status = "PAID"
+        payment.reference_id = request.GET.get("reference_id") or "REF_UNKNOWNID" 
+        payment.transaction_id = request.GET.get("transaction_id") or "TXN_UNKNOWNID"
+        payment.payment_mode = request.GET.get("payment_mode") or "UNKNOWN"
+        payment.payment_time = timezone.now()
+        payment.save()
+
+    except Payment.DoesNotExist:
+        messages.error(request, "Payment record not found.")
+        return redirect("movies")
+
     booking = Booking.objects.create(
         user=user,
         movie=movie,
@@ -228,8 +249,7 @@ def payment_callback(request):
 
     booking.save()
 
-    # Clean up session
     for key in ['selected_seats', 'totalAmount', 'movie_id', 'theater_id', 'date', 'time', 'cashfree_order_id']:
         request.session.pop(key, None)
 
-    return render(request, "movie/payment_success.html", {"booking": booking})
+    return render(request, "movie/payment_success.html", {"booking": booking}, {"payment": payment})

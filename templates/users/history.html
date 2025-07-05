@@ -11,34 +11,92 @@
     <div class="row justify-content-center">
         {% for booking in bookings %}
         <div class="col-lg-6 col-md-8 mb-4">
-            <div class="card border-0 shadow-lg rounded-4">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
                 <div class="card-header bg-danger text-white rounded-top-4">
                     <div class="d-flex align-items-center">
                         <img src="{{ booking.movie.poster.url }}" alt="{{ booking.movie.name }}"
-                            class="me-3 rounded shadow" style="height: 80px; width: 60px; object-fit: cover;">
+                             class="me-3 rounded shadow-sm" style="height: 80px; width: 60px; object-fit: cover;">
                         <div>
                             <h5 class="mb-1 fs-4">{{ booking.movie.name }}</h5>
-                            <small class="d-block fs-6"><strong class="fs-5">Show Timing:</strong> {{ booking.theater.datetime|date:"M d, Y - h:i A" }}</small>
+                            <small class="d-block fs-6">
+                                <strong class="fs-5">Show Timing:</strong>
+                                {{ booking.theater.datetime|date:"M d, Y - h:i A" }}
+                            </small>
                         </div>
                     </div>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body bg-light">
                     <p class="mb-2"><strong>Theater:</strong> {{ booking.theater.name }}</p>
-                    <p class="mb-2"><strong>Total Seats:</strong> {{ booking.seats.all.count }}</p>
+                    <p class="mb-2"><strong>Total Seats:</strong> {{ booking.seats.count }}</p>
                     <p class="mb-2"><strong>Seats:</strong>
                         {% for seat in booking.seats.all %}
-                        <span class="badge bg-dark me-1">{{ seat.seat_number }}</span>
+                            <span class="badge bg-dark me-1">{{ seat.seat_number }}</span>
                         {% endfor %}
                     </p>
                     <p class="mb-2"><strong>Amount Paid:</strong> {{ booking.amount }}</p>
-                    <p class="mb-2"><strong>Booking Timestamp:</strong> {{ booking.booked_at|date:"M d, Y - H:i A" }}
-                    </p>
+                    <p class="mb-2"><strong>Booking Time:</strong> {{ booking.booked_at|date:"M d, Y - H:i A" }}</p>
+                </div>
+
+                <div class="card-footer text-center bg-white">
+                    <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#detailsModal{{ booking.id }}">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="detailsModal{{ booking.id }}" tabindex="-1"
+             aria-labelledby="detailsModalLabel{{ booking.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content rounded-4 shadow">
+                    <div class="modal-header bg-dark text-white">
+                        <h5 class="modal-title" id="detailsModalLabel{{ booking.id }}">Booking Details</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong> Movie:</strong> {{ booking.movie.name }}</p>
+                        <p><strong> Theater:</strong> {{ booking.theater.name }}</p>
+                        <p><strong> Seats:</strong>
+                            {% for seat in booking.seats.all %}
+                                <span class="badge bg-secondary me-1">{{ seat.seat_number }}</span>
+                            {% endfor %}
+                        </p>
+                        <p><strong> Amount:</strong> {{ booking.amount }}</p>
+                        <p><strong> Booked At:</strong> {{ booking.booked_at|date:"d M Y, h:i A" }}</p>
+
+                        {% for payment in payments %}
+                        {% if payment %}
+                        <hr class="my-3">
+                        <h6 class="text-muted fw-bold mb-3">Payment Information</h6>
+                        <p><strong>Order ID:</strong> {{ payment.order_id }}</p>
+                        <p><strong>Link ID:</strong> {{ payment.link_id }}</p>
+                        <p><strong>Reference ID:</strong> {{ payment.reference_id }}</p>
+                        <p><strong>Payment Mode:</strong> {{ payment.payment_mode }}</p>
+                        <p><strong>Status:</strong>
+                            <span class="badge {% if payment.status == 'PAID' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                {{ payment.status }}
+                            </span>
+                        </p>
+                        <p><strong>Payment Time:</strong> {{ payment.payment_time|date:"d M Y, h:i A" }}</p>
+                        {% else %}
+                        <div class="alert alert-warning">No payment info available.</div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="modal-footer">
+                        <a href="" class="btn btn-success">Download Receipt</a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
+
     {% else %}
     <div class="alert alert-warning text-center mt-5 p-2 rounded-4 shadow-sm">
         <h5 class="mb-2">No Bookings Found</h5>
